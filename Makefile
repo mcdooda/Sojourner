@@ -1,0 +1,60 @@
+CC=gcc
+CFLAGS=-g -ansi -Wall
+LDFLAGS=-lSDL -lIL -lILUT -lGL -lGLU -lm
+
+SRCDIR=src
+OBJDIR=obj
+RELDIR=release
+SRCRELDIR=src-release
+LIBDIR=lib
+
+RELEASE=sojourner.tgz
+SRCRELEASE=sojourner-src.tgz
+
+LIBSRC=$(wildcard $(SRCDIR)/*.c)
+SRC=$(LIBSRC) $(wildcard $(SRCDIR)/deps/*.c)
+OBJ=$(patsubst $(SRCDIR)/%.c, $(OBJDIR)/%.o, $(SRC))
+LIB=$(patsubst $(SRCDIR)%.c, $(LIBDIR)%.so, $(LIBSRC))
+
+LUA=$(wildcard *.lua) $(wildcard $(LIBDIR)/*.lua)
+LUAC=$(patsubst %.lua, %.luac, $(LUA))
+
+RSRC=*.png
+
+.PHONY: all clean objdirs luac release src-release
+
+all: objdirs $(OBJ) $(LIB)
+
+release: clean all luac
+	mkdir -p $(RELDIR)
+	mkdir -p $(RELDIR)/$(LIBDIR)
+	cp $(LIBDIR)/*.so $(LIBDIR)/*.luac $(RELDIR)/$(LIBDIR)
+	cp *.luac $(RSRC) $(RELDIR)
+	tar zcf $(RELEASE) $(RELDIR)
+	
+src-release: clean
+	mkdir -p $(SRCRELDIR)
+	mkdir -p $(SRCRELDIR)/$(LIBDIR)
+	cp $(LIBDIR)/*.lua $(SRCRELDIR)/$(LIBDIR)
+	cp *.lua $(RSRC) Makefile $(SRCRELDIR)
+	cp -r $(SRCDIR) $(SRCRELDIR)/$(SRCDIR)
+	tar zcf $(SRCRELEASE) $(SRCRELDIR)
+
+%.so: $(OBJ)
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -shared
+	
+$(OBJDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/%.h
+	$(CC) $(CFLAGS) $< -o $@ -c -fPIC
+
+objdirs:
+	mkdir -p $(OBJDIR)
+	mkdir -p $(OBJDIR)/deps
+	
+luac: $(LUAC)
+	
+%.luac: %.lua
+	luac -o $@ $<
+
+clean:
+	rm -rf $(OBJDIR) $(RELDIR) $(SRCRELDIR) $(RELEASE) $(SRCRELEASE) $(LIBDIR)/*.so $(LUAC)
+
