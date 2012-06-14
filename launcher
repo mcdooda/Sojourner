@@ -1,13 +1,5 @@
 #!/usr/bin/env lua
 
-if arg[1] then
-  local cmd = arg[1]..' '..arg[0]
-  if os.execute(cmd) ~= 0 then
-    print('Could not execute '..cmd)
-  end
-  os.exit()
-end
-
 local version = _VERSION
 if jit and jit.version then
   version = jit.version
@@ -28,7 +20,7 @@ local function require(p)
     pkg = oldrequire(p)
   end)
   if not ok then
-    os.execute 'make'
+    os.execute 'make > /dev/null'
     pkg = oldrequire(p)
   end
   return assert(pkg, msg)

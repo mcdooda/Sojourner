@@ -1,6 +1,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <IL/il.h>
+#define ILUT_USE_OPENGL
 #include <IL/ilut.h>
 #include <SDL/SDL.h>
 #include <lua5.1/lauxlib.h>

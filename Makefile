@@ -2,6 +2,9 @@ CC=gcc
 CFLAGS=-g -ansi -Wall
 LDFLAGS=-lSDL -lIL -lILUT -lGL -lGLU -lm
 
+# sometimes required
+WHOLEARCHIVE=-WL,-whole-archive -lGL -lSDL -lILUT
+
 SRCDIR=src
 OBJDIR=obj
 RELDIR=release
@@ -41,7 +44,7 @@ src-release: clean
 	tar zcf $(SRCRELEASE) $(SRCRELDIR)
 
 %.so: $(OBJ)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -shared
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ -shared $(WHOLEARCHIVE)
 	
 $(OBJDIR)/%.o: $(SRCDIR)/%.c $(SRCDIR)/%.h
 	$(CC) $(CFLAGS) $< -o $@ -c -fPIC

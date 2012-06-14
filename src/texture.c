@@ -21,8 +21,8 @@ int luaopen_texture(lua_State* L)
     {"draw",       texture_draw},
     {NULL, NULL}
   };
-	class(L, "Texture", superclasses, texture_allocator, methods);
-	return 0;
+  class(L, "Texture", superclasses, texture_allocator, methods);
+  return 0;
 }
 
 int texture_allocator(lua_State* L)
