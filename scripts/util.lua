@@ -3,7 +3,7 @@ function info(msg)
 end
 
 function createFileFromTemplate(template, file, ...)
-  local f = io.open(file, 'w')
+  local f = io.open('game/'..file, 'w')
   local tpl = io.open(template, 'r')
   f:write(string.format(tpl:read('*all'), ...))
   tpl:close()
@@ -12,7 +12,9 @@ function createFileFromTemplate(template, file, ...)
 end
 
 function toClassName(name)
-  return string.upper(string.sub(name, 1, 1))..string.lower(string.sub(name, 2, #name))
+  local className = string.upper(string.sub(name, 1, 1))..string.lower(string.sub(name, 2, #name))
+  className = string.gsub(className, " (.)", string.upper)
+  return className
 end
 
 function isIdentifier(name)

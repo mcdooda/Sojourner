@@ -7,7 +7,7 @@ end
 print('Running '..version)
 
 local package = package
-package.path  = package.path..';./?.luac;lib/?.luac;lib/?.lua'
+package.path  = package.path..';game/?.lua;game/?.luac;lib/?.luac;lib/?.lua'
 package.cpath = package.cpath..';lib/?.so'
 
 -- new
@@ -19,10 +19,6 @@ local function require(p)
   local ok, msg = pcall(function()
     pkg = oldrequire(p)
   end)
-  if not ok then
-    os.execute 'make > /dev/null'
-    pkg = oldrequire(p)
-  end
   return assert(pkg, msg)
 end
 
