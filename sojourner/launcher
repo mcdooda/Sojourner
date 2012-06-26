@@ -1,0 +1,105 @@
+#!/usr/bin/env lua5.1
+
+local sojourner_path = 'sojourner'
+
+local version = _VERSION
+if jit and jit.version then
+  version = jit.version
+end
+print('Running '..version)
+
+local package = package
+package.path  = package.path..';game/?.lua;game/?.luac;'..sojourner_path..'/lib/?.luac;'..sojourner_path..'/lib/?.lua'
+package.cpath = package.cpath..';'..sojourner_path..'/lib/?.so'
+
+-- new
+require 'newclass'
+
+local oldrequire = require
+local function require(p)
+  local pkg
+  local ok, msg = pcall(function()
+    pkg = oldrequire(p)
+  end)
+  return assert(pkg, msg)
+end
+
+-- graphics
+local graphics = require 'graphics'
+local graphicsBeginFrame = graphics.beginFrame
+local graphicsEndFrame   = graphics.endFrame
+
+-- input
+local input = require 'input'
+local inputClosed  = input.closed
+local inputPointer = input.pointer
+local inputPoll    = input.poll
+local inputWait    = input.wait
+local inputPressed = input.pressed
+
+-- key
+local key = require 'key'
+
+-- time
+local time = require 'time'
+local timeBeginFrame    = time.beginFrame
+local timeEndFrame      = time.endFrame
+local timeBeginUpdate   = time.beginUpdate
+local timeEndUpdate     = time.endUpdate
+local timeTotal         = time.total
+local timeFrameDuration = time.frameDuration
+local timeRealFrameRate = time.realFrameRate
+local timeFrameRate     = time.frameRate
+
+-- config
+local config = require 'config'
+
+if config.required then
+  for _, lib in pairs(config.required) do
+    require(lib)
+  end
+end
+
+package.path = package.path..';./'..config.name..'/?.lua'
+
+local game = new[config.game](arg)
+local gameUpdate = game.update
+local gameDraw = game.draw
+
+-- graphics open
+local desktopWidth, desktopHeight = graphics.desktopResolution()
+local width  = config.width  or desktopWidth
+local height = config.height or desktopHeight
+graphics.open(width, height, config.name, config.fullscreen, config.resizable, config.noframe)
+time.setFrameRate(config.frameRate or 60)
+
+-- input open
+input.open()
+
+game:load()
+game:setup(time, graphics)
+
+if config.collectEvent == 'wait' then -- waits an event before each frame
+  while not inputClosed() and game.running do
+    timeBeginFrame()
+      inputWait()
+      gameUpdate(game, input, key, time)
+      graphicsBeginFrame()
+        gameDraw(game)
+      graphicsEndFrame()
+    timeEndFrame()
+  end
+else -- calls update only once before drawing
+  while not inputClosed() and game.running do
+    timeBeginFrame()
+      inputPoll()
+      gameUpdate(game, input, key, time)
+      graphicsBeginFrame()
+       gameDraw(game)
+      graphicsEndFrame()
+    timeEndFrame()
+  end
+end
+
+input.close()
+graphics.close()

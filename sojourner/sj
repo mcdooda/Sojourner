@@ -1,4 +1,5 @@
-#!/usr/bin/env lua
+#!/usr/bin/env lua5.1
+
 require 'scripts/util'
 
 local commands = {
@@ -33,8 +34,8 @@ local commands = {
 
 local function help()
   print 'Available commands:'
-  for k, v in pairs(commands) do
-    print('  '..k)
+  for command, _ in pairs(commands) do
+    print('  '..command)
   end
 end
 

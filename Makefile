@@ -5,11 +5,14 @@ LDFLAGS=-lSDL -lIL -lILUT -lGL -lGLU -lm
 # sometimes required
 WHOLEARCHIVE=-WL,-whole-archive -lGL -lSDL -lILUT
 
-SRCDIR=src
-OBJDIR=obj
+SJDIR=sojourner
+LUAVERSION=5.1
+
+SRCDIR=$(SJDIR)/src
+OBJDIR=$(SJDIR)/obj
 RELDIR=release
 SRCRELDIR=src-release
-LIBDIR=lib
+LIBDIR=$(SJDIR)/lib
 
 RELEASE=sojourner.tgz
 SRCRELEASE=sojourner-src.tgz
@@ -26,7 +29,11 @@ RSRC=*.png
 
 .PHONY: all clean objdirs luac release src-release
 
-all: objdirs $(OBJ) $(LIB)
+all: objdirs $(OBJ) $(LIB) luac
+
+.PHONY: game
+game:
+	lua$(LUAVERSION) ./sojourner/launcher
 
 release: clean all luac
 	mkdir -p $(RELDIR)
@@ -56,7 +63,7 @@ objdirs:
 luac: $(LUAC)
 	
 %.luac: %.lua
-	luac -o $@ $<
+	luac$(LUAVERSION) -o $@ $<
 
 clean:
 	rm -rf $(OBJDIR) $(RELDIR) $(SRCRELDIR) $(RELEASE) $(SRCRELEASE) $(LIBDIR)/*.so $(LUAC)
