@@ -27,13 +27,15 @@ LUAC=$(patsubst %.lua, %.luac, $(LUA))
 
 RSRC=*.png
 
-.PHONY: all clean objdirs luac release src-release
+.PHONY: all clean objdirs luac release src-release game sj
 
-all: objdirs $(OBJ) $(LIB) luac
+all: objdirs $(OBJ) $(LIB)
 
-.PHONY: game
 game:
-	lua$(LUAVERSION) ./sojourner/launcher
+	lua$(LUAVERSION) ./$(SJDIR)/launcher
+
+sj:
+	./$(SJDIR)/sj
 
 release: clean all luac
 	mkdir -p $(RELDIR)

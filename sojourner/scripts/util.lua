@@ -8,7 +8,7 @@ function createFileFromTemplate(template, file, ...)
   f:write(string.format(tpl:read('*all'), ...))
   tpl:close()
   f:close()
-  info('created '..file)
+  info('created game/'..file)
 end
 
 function toClassName(name)

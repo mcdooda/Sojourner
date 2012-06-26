@@ -58,7 +58,7 @@ classes.Object = {
   end,
   
   destroy = function(self)
-    -- only called if self is a userdata in lua 5.1
+    -- only called if self is a userdata (at least in lua 5.1)
   end,
   
   class_name = function(self)
@@ -132,8 +132,20 @@ local class = setmetatable({}, {
           self:destroy()
         end,
         
-        __eq = function()
-          return true -- instances of the same class are considered equal
+        __eq = function(self, other)
+          if not other.class_name then
+            return false
+          elseif getmetatable(self) ~= getmetatable(other) then
+            return false
+          end
+          if type(self) == 'table' then
+            for k, v in pairs(self) do
+              if other[k] ~= v then
+                return false
+              end
+            end
+          end
+          return true -- userdatas are always the same
         end,
         
         name = classname,
