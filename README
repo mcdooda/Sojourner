@@ -1,2 +1,0 @@
-Use texturemanager to load a texture when you are using sprites because they may
-be garbage collected unexpectedly without it.
